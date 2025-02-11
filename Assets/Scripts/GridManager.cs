@@ -30,6 +30,7 @@ public class GridManager : MonoBehaviour
     {
         if (int.TryParse(cellCountInput.text, out int parsedCellCount))
         {
+            if (parsedCellCount < 3) parsedCellCount = 3;
             cellCount = parsedCellCount;
         }
         else
