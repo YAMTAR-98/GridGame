@@ -102,7 +102,7 @@ MonoBehaviour:
   x: 0
   y: 0
   xMarker: {fileID: 4362611925933145501}
-  targetScale: {x: 0.16, y: 0.16, z: 0.16}
+  targetScale: {x: 1.8, y: 1.8, z: 1.8}
   scaleDuration: 0.1
   clearDuration: 0.25
 --- !u!61 &-6831895207268681396
@@ -161,7 +161,7 @@ PrefabInstance:
     - target: {fileID: 4626759378776920415, guid: 10012e4bc993f7c468b36ad200238619, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: 93f8abb6df8f9f348910ec6328660560, type: 3}
+      objectReference: {fileID: 21300000, guid: 291374a43a49ef046bd7659d10810571, type: 3}
     - target: {fileID: 4626759378776920415, guid: 10012e4bc993f7c468b36ad200238619, type: 3}
       propertyPath: m_Color.b
       value: 0
@@ -172,7 +172,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4626759378776920415, guid: 10012e4bc993f7c468b36ad200238619, type: 3}
       propertyPath: m_Color.r
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4626759378776920415, guid: 10012e4bc993f7c468b36ad200238619, type: 3}
       propertyPath: m_Materials.Array.data[0]

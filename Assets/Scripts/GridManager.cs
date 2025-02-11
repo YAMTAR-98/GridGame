@@ -4,20 +4,19 @@ using UnityEngine;
 
 public class GridManager : MonoBehaviour
 {
-    [Header("Grid Ayarları")]
-    [Tooltip("cellCount x cellCount boyutunda grid oluşturulur.")]
+    [Header("Grid Settings")]
+    [Tooltip("Creates a grid of size cellCount x cellCount.")]
     [Range(3, 80)] public int cellCount = 5;
     public GameObject cellPrefab;
     public GameObject background;
     public TMP_Text score;
     public TMP_InputField cellCountInput;
-    public float cellSpacing = 0.1f; // Hücreler arası mesafe
+    public float cellSpacing = 0.1f; // Spacing between cells
 
     private Cell[,] grid;
 
     private int executionCount = 0;
     private int variableToIncrement = 0;
-
 
     private const float DEFAULT_CELL_SPACING = 0.1f;
 
@@ -25,6 +24,7 @@ public class GridManager : MonoBehaviour
     {
         GenerateGrid();
     }
+
     [ContextMenu("Rebuild")]
     public void GenerateGrid()
     {
@@ -46,7 +46,7 @@ public class GridManager : MonoBehaviour
         else
             cellSpacing = DEFAULT_CELL_SPACING;
 
-        // Var olan grid varsa temizle
+        // Clear the existing grid if any
         if (grid != null)
         {
             foreach (Cell cell in grid)
@@ -59,14 +59,14 @@ public class GridManager : MonoBehaviour
         grid = new Cell[cellCount, cellCount];
         float cellSize = DetermineCellSize();
 
-        // Grid’i ekranın ortasında konumlandırmak için offset hesaplaması
+        // Calculate offset to position the grid in the center of the screen
         float offset = (cellCount - 1) / 2f;
 
         for (int i = 0; i < cellCount; i++)
         {
             for (int j = 0; j < cellCount; j++)
             {
-                // Pozisyon hesaplaması: i ve j değerlerine göre
+                // Calculate position based on i and j values
                 Vector3 pos = new Vector3((i - offset) * (cellSize + cellSpacing), (j - offset) * (cellSize + cellSpacing) + 1, 0);
                 GameObject cellObj = Instantiate(cellPrefab, pos, Quaternion.identity, transform);
                 cellObj.transform.localScale = Vector3.one * cellSize;
@@ -77,19 +77,19 @@ public class GridManager : MonoBehaviour
         }
     }
 
-    // Hücrelerin boyutunu ekran boyutuna göre hesaplayan fonksiyon
+    // Function to calculate cell size based on screen dimensions
     float DetermineCellSize()
     {
         Camera cam = Camera.main;
-        // Ortografik kamera için ekran yüksekliği (world units)
+        // Screen height for an orthographic camera (in world units)
         float height = cam.orthographicSize * 2;
-        // Ekran genişliği
+        // Screen width
         float width = height * cam.aspect;
 
-        // Hücreler arası boşluk değeri (örneğin GridManager'da tanımlı bir cellSpacing varsa onu kullanabilirsiniz)
-        float spacing = cellSpacing; // cellSpacing, grid oluşturulurken kullanılan spacing değeri olsun.
+        // Spacing value between cells (using the cellSpacing defined in GridManager)
+        float spacing = cellSpacing;
 
-        // cellCount hücre, cellCount-1 aralık olduğundan kullanılabilir toplam genişlik/yükseklik:
+        // Since there are cellCount cells and cellCount-1 gaps, calculate the available width/height:
         float availableWidth = width - (cellCount - 1) * spacing;
         float availableHeight = height - (cellCount - 1) * spacing;
 
@@ -97,44 +97,39 @@ public class GridManager : MonoBehaviour
         if (width > height)
         {
             wideScreenvalue = 10f;
-
-            //background.GetComponent<RectTransform>().position = new Vector3(background.transform.position.x, background.transform.position.y, background.transform.position.z);
-            // background.transform.localScale = new Vector3(0.33f, 0.33f, 0.33f);
+            // Background adjustments commented out
         }
         else
         {
             wideScreenvalue = 0.5f;
-            //background.GetComponent<RectTransform>().position = new Vector3(background.transform.position.x, background.transform.position.x + 50f, background.transform.position.z);
-            //background.transform.localScale = new Vector3(1, 1, 1);
+            // Background adjustments commented out
         }
 
-
-        // Grid kare olduğundan, en küçük kullanılabilir alanı baz alarak cellSize hesaplanır:
+        // Since the grid is square, cellSize is calculated based on the smallest available area:
         float cellSize = Mathf.Min(availableWidth - wideScreenvalue, availableHeight - wideScreenvalue / 2f) / cellCount;
         return cellSize;
     }
 
-    // Hücreye tıklandığında çağrılır
+    // Called when a cell is clicked
     public void OnCellClicked(Cell clickedCell)
     {
-
-        // Eğer hücre zaten işaretliyse (X varsa) hiçbir işlem yapma
+        // Do nothing if the cell is already marked (has an X)
         if (clickedCell.IsMarked)
             return;
 
-        clickedCell.Mark(); // X işaretini yerleştir
+        clickedCell.Mark(); // Place the X marker
     }
 
-    // X yerleştirildiğinde yatay ve dikey olarak ardışık X'leri kontrol eder
+    // Checks for consecutive X markers horizontally and vertically when an X is placed
     internal void CheckAndClearMatches(Cell cell)
     {
         int i = cell.x;
         int j = cell.y;
 
-        // Yatay kontrol
+        // Horizontal check
         List<Cell> horizontalMatches = new List<Cell>();
         horizontalMatches.Add(cell);
-        // Sol tarafa kontrol
+        // Check to the left
         for (int a = i - 1; a >= 0; a--)
         {
             if (grid[a, j].IsMarked)
@@ -142,7 +137,7 @@ public class GridManager : MonoBehaviour
             else
                 break;
         }
-        // Sağ tarafa kontrol
+        // Check to the right
         for (int a = i + 1; a < cellCount; a++)
         {
             if (grid[a, j].IsMarked)
@@ -158,10 +153,10 @@ public class GridManager : MonoBehaviour
             }
         }
 
-        // Dikey kontrol
+        // Vertical check
         List<Cell> verticalMatches = new List<Cell>();
         verticalMatches.Add(cell);
-        // Aşağıya kontrol
+        // Check downward
         for (int b = j - 1; b >= 0; b--)
         {
             if (grid[i, b].IsMarked)
@@ -169,7 +164,7 @@ public class GridManager : MonoBehaviour
             else
                 break;
         }
-        // Yukarıya kontrol
+        // Check upward
         for (int b = j + 1; b < cellCount; b++)
         {
             if (grid[i, b].IsMarked)
@@ -185,6 +180,7 @@ public class GridManager : MonoBehaviour
             }
         }
     }
+
     public void ScoreCount()
     {
         executionCount++;
@@ -193,8 +189,7 @@ public class GridManager : MonoBehaviour
         {
             variableToIncrement++;
             score.text = "SCORE:" + variableToIncrement;
-            executionCount = 0; // Sayaç sıfırlanır.
-
+            executionCount = 0; // Reset the counter.
         }
     }
 }
